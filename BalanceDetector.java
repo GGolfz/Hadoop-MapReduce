@@ -48,14 +48,15 @@ class BalanceDetectorReducer
         BigDecimal withdrawalValue = new BigDecimal(data[data.length - 2]);
         BigDecimal initialBalance = new BigDecimal(prev);
         BigDecimal calculatedBalance = initialBalance
-          .add(withdrawalValue)
-          .subtract(depositValue);
+          .add(depositValue)
+          .subtract(withdrawalValue);
+        prev = data[data.length - 1];
         if (currentBalance.compareTo(calculatedBalance) != 0) {
           outputKey.set("");
           outputValue.set(
             value.toString() + "," + calculatedBalance.toString()
           );
-          context.write(key, outputValue);
+          context.write(outputKey, outputValue);
         }
       }
     }

@@ -9,6 +9,6 @@
       </property>
       <property>
         <name>yarn.resourcemanager.hostname</name>
-        <value>34.130.108.116</value>
+        <value>10.148.0.3</value>
       </property>
 </configuration>

@@ -1,6 +1,6 @@
 <configuration>
     <property>
         <name>fs.defaultFS</name>
-        <value>hdfs://hadoop-node-1:9000</value>
+        <value>hdfs://34.124.184.48:9000</value>
     </property>
 </configuration>

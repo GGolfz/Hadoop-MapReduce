@@ -9,6 +9,6 @@
     </property>
     <property>
       <name>dfs.secondary.http.address</name>
-      <value>34.88.156.69:50090</value>
+      <value>10.128.0.2:50090</value>
     </property>
 </configuration>

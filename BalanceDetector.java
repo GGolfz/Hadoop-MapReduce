@@ -10,58 +10,49 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-class BalanceDetectorMapper
-  extends Mapper<LongWritable, Text, Text, Text> {
+class BalanceDetectorMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private Text outputKey = new Text();
   private Text outputValue = new Text();
+  private String prev;
 
   public void map(LongWritable key, Text value, Context context)
     throws IOException, InterruptedException {
-    if(value.toString().equals("Date,Description,Deposits,Withdrawls,Balance")) {
+    if (
+      value.toString().equals("Date,Description,Deposits,Withdrawls,Balance")
+    ) {
       return;
     }
     String[] data = value.toString().split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
     for (int i = 0; i < data.length; i++) {
       data[i] = data[i].replaceAll(",", "").replaceAll("\"", "");
     }
-    String date = data[0];
-    String content = String.join(",", data);
-    outputKey.set(date);
-    outputValue.set(content);
-    context.write(outputKey, outputValue);
+    if (prev == null) {
+      prev = data[data.length - 1];
+    } else {
+      BigDecimal currentBalance = new BigDecimal(data[data.length - 1]);
+      BigDecimal depositValue = new BigDecimal(data[data.length - 3]);
+      BigDecimal withdrawalValue = new BigDecimal(data[data.length - 2]);
+      BigDecimal initialBalance = new BigDecimal(prev);
+      BigDecimal calculatedBalance = initialBalance
+        .add(depositValue)
+        .subtract(withdrawalValue);
+      if (currentBalance.compareTo(calculatedBalance) != 0) {
+        outputKey.set("Date: " + data[0] + " Description: " + data[1]);
+        outputValue.set("Initial Balance: " + prev + " Deposit: "+ data[data.length - 3] + " Withdrawal: " +data[data.length - 2] + " Calculated Balance: " + calculatedBalance.toString() + " Recorded  Balance: "+ data[data.length - 1] + " Difference: " + calculatedBalance.subtract(currentBalance));
+        context.write(outputKey, outputValue);
+      }
+      prev = data[data.length - 1];
+    }
   }
 }
 
-class BalanceDetectorReducer
-  extends Reducer<Text, Text, Text, Text> {
-  private Text outputKey = new Text();
-  private Text outputValue = new Text();
+class BalanceDetectorReducer extends Reducer<Text, Text, Text, Text> {
 
   public void reduce(Text key, Iterable<Text> values, Context context)
     throws IOException, InterruptedException {
-    String prev = "";
     for (Text value : values) {
-      String[] data = value.toString().split(",");
-      if (prev == "") {
-        prev = data[data.length - 1];
-      } else {
-        BigDecimal currentBalance = new BigDecimal(data[data.length - 1]);
-        BigDecimal depositValue = new BigDecimal(data[data.length - 3]);
-        BigDecimal withdrawalValue = new BigDecimal(data[data.length - 2]);
-        BigDecimal initialBalance = new BigDecimal(prev);
-        BigDecimal calculatedBalance = initialBalance
-          .add(depositValue)
-          .subtract(withdrawalValue);
-        prev = data[data.length - 1];
-        if (currentBalance.compareTo(calculatedBalance) != 0) {
-          outputKey.set("");
-          outputValue.set(
-            value.toString() + "," + calculatedBalance.toString()
-          );
-          context.write(outputKey, outputValue);
-        }
-      }
+      context.write(key, value);
     }
   }
 }

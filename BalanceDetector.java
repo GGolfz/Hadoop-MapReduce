@@ -47,16 +47,6 @@ class BalanceDetectorMapper extends Mapper<LongWritable, Text, Text, Text> {
   }
 }
 
-class BalanceDetectorReducer extends Reducer<Text, Text, Text, Text> {
-
-  public void reduce(Text key, Iterable<Text> values, Context context)
-    throws IOException, InterruptedException {
-    for (Text value : values) {
-      context.write(key, value);
-    }
-  }
-}
-
 public class BalanceDetector {
 
   public static void main(String[] args) throws Exception {
@@ -64,7 +54,7 @@ public class BalanceDetector {
     Job job = Job.getInstance(conf, "BalanceDetector");
     job.setJarByClass(BalanceDetector.class);
     job.setMapperClass(BalanceDetectorMapper.class);
-    job.setReducerClass(BalanceDetectorReducer.class);
+    job.setNumReduceTasks(0);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
     FileInputFormat.addInputPath(job, new Path(args[0]));

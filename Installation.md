@@ -30,8 +30,8 @@ Host 10.148.0.3
     HostName 10.148.0.3
     User hadoop
     IdentityFile ~/.ssh/id_rsa
-Host 10.128.0.2
-    HostName 10.128.0.2
+Host 10.138.0.2
+    HostName 10.138.0.2
     User hadoop
     IdentityFile ~/.ssh/id_rsa
 Host 10.152.0.2
@@ -54,7 +54,7 @@ Host 10.188.0.3
 wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.1/hadoop-3.3.1.tar.gz && tar xvzf hadoop-3.3.1.tar.gz && mv hadoop-3.3.1 hadoop && rm hadoop-3.3.1.tar.gz
 ```
 
-9. Configure Hadoop Environment Variables which locate at ~/hadoop/etc/hadoop/hadoop-env.sh
+9. Configure Hadoop Environment Variables which locate at `~/hadoop/etc/hadoop/hadoop-env.sh` on all nodes.
 
 ```
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
@@ -83,7 +83,7 @@ source ~/hadoop/etc/hadoop/hadoop-env.sh
 </configuration>
 ```
 
-12. Configure `hdfs-site.xml` which locate at `~/hadoop/etc/hadoop/hdfs-site.xml` on master node. (10.128.0.2 is internal IP of another node that we selected as SecondaryNameNode)
+12. Configure `hdfs-site.xml` which locate at `~/hadoop/etc/hadoop/hdfs-site.xml` on master node. (10.138.0.2 is internal IP of another node that we selected as SecondaryNameNode)
 
 ```
 <configuration>
@@ -97,7 +97,7 @@ source ~/hadoop/etc/hadoop/hadoop-env.sh
     </property>
     <property>
       <name>dfs.secondary.http.address</name>
-      <value>10.128.0.2:50090</value>
+      <value>10.138.0.2:50090</value>
     </property>
 </configuration>
 ```
@@ -174,7 +174,7 @@ Worker Node
 16. Configure masters file which locate at `~/hadoop/etc/hadoop/masters` on master node.
 ```
 10.148.0.3
-10.128.0.2
+10.138.0.2
 10.152.0.2
 10.166.0.3
 10.188.0.3

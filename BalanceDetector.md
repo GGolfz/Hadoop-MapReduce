@@ -69,3 +69,20 @@ public class BalanceDetector {
 ```
 
 The full source code of BalanceDetector is shown in `BalanceDetector.java` file in compressed attachment.
+
+We need to download hadoop-core-1.2.1.jar from https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-core/1.2.1/hadoop-core-1.2.1.jar.
+
+Then we compile jar file using below command.
+```
+mkdir balanceDetector && javac -classpath hadoop-core-1.2.1.jar -d balanceDetector BalanceDetector.java && jar -cvf BalanceDetector.jar -C balanceDetector/ . && rm -rf balanceDetector
+```
+
+We get BalanceDetector.jar file and assign job to hadoop mapreduce using below command.
+```
+hadoop jar BalanceDetector.jar BalanceDetector input/data.csv output
+```
+Since we perform only map task, we get the output in multiple parts file. We need to merge the output file using below command.
+```
+hadoop fs -getmerge -nl output error_balance.txt && hadoop fs -rm -R output && hadoop fs -mkdir output && hadoop fs -put error_balance.txt output/error_balance.txt && rm error_balance.txt
+```
+We merge all parts in output folder and get the output in `error_balance.txt` file and we remove output folder in HDFS, upload `error_balance.txt` file to HDFS and remove `error_balance.txt` in local file system.

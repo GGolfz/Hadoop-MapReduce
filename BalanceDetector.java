@@ -51,6 +51,8 @@ public class BalanceDetector {
 
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
+    conf.set("mapreduce.input.fileinputformat.split.maxsize", "48000000");
+    conf.set("mapreduce.input.fileinputformat.split.minsize", "24000000");
     Job job = Job.getInstance(conf, "BalanceDetector");
     job.setJarByClass(BalanceDetector.class);
     job.setMapperClass(BalanceDetectorMapper.class);

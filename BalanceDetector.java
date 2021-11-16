@@ -18,11 +18,7 @@ class BalanceDetectorMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   public void map(LongWritable key, Text value, Context context)
     throws IOException, InterruptedException {
-    if (
-      value.toString().equals("Date,Description,Deposits,Withdrawls,Balance")
-    ) {
-      return;
-    }
+    if (value.toString().equals("Date,Description,Deposits,Withdrawls,Balance")) return;
     String[] data = value.toString().split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
     for (int i = 0; i < data.length; i++) {
       data[i] = data[i].replaceAll(",", "").replaceAll("\"", "");

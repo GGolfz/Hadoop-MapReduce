@@ -1,4 +1,4 @@
-Hadoop Installization Steps
+# Hadoop Installation Steps
 
 1. Create Virtual Machine on Cloud Provider (Configure Firewall to allow port 8000 - 50000).
 2. SSH into each Virtual Machine.
@@ -51,7 +51,8 @@ Host 10.188.0.3
 8. Download hadoop 3.3.1, extract it and rename it to hadoop.
 
 ```
-wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.1/hadoop-3.3.1.tar.gz && tar xvzf hadoop-3.3.1.tar.gz && mv hadoop-3.3.1 hadoop && rm hadoop-3.3.1.tar.gz
+wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.1/hadoop-3.3.1.tar.gz 
+tar xvzf hadoop-3.3.1.tar.gz && mv hadoop-3.3.1 hadoop && rm hadoop-3.3.1.tar.gz
 ```
 
 9. Configure Hadoop Environment Variables which locate at `~/hadoop/etc/hadoop/hadoop-env.sh` on all nodes.
@@ -67,13 +68,17 @@ export HADOOP_HOME=/home/hadoop/hadoop
 ```
 
 10. Activate Hadoop Environment Variables using following command.
-
 ```
 source ~/hadoop/etc/hadoop/hadoop-env.sh
 ```
 
-11. Configure `core-site.xml` which locate at `~/hadoop/etc/hadoop/core-site.xml` on all nodes. (10.148.0.3 is my Master Node's internal IP)
+11. Create directory for hdfs data on all nodes and change owner of file to be `hadoop` using following command.
+```
+sudo mkdir -p /usr/local/hadoop/hdfs/data
+sudo chown -R hadoop:hadoop /usr/local/hadoop/hdfs/data
+```
 
+12. Configure `core-site.xml` which locate at `~/hadoop/etc/hadoop/core-site.xml` on all nodes. (10.148.0.3 is my Master Node's internal IP)
 ```
 <configuration>
   <property>
@@ -83,13 +88,13 @@ source ~/hadoop/etc/hadoop/hadoop-env.sh
 </configuration>
 ```
 
-12. Configure `hdfs-site.xml` which locate at `~/hadoop/etc/hadoop/hdfs-site.xml` on master node. (10.138.0.2 is internal IP of another node that we selected as SecondaryNameNode)
+13. Configure `hdfs-site.xml` which locate at `~/hadoop/etc/hadoop/hdfs-site.xml` on master node. (10.138.0.2 is internal IP of another node that we selected as SecondaryNameNode)
 
 ```
 <configuration>
     <property>
       <name>dfs.replication</name>
-      <value>5</value>
+      <value>3</value>
     </property>
     <property>
       <name>dfs.namenode.name.dir</name>
@@ -102,7 +107,7 @@ source ~/hadoop/etc/hadoop/hadoop-env.sh
 </configuration>
 ```
 
-13. Configure `yarn-site.xml` which locate at `~/hadoop/etc/hadoop/yarn-site.xml` on all nodes.
+14. Configure `yarn-site.xml` which locate at `~/hadoop/etc/hadoop/yarn-site.xml` on all nodes.
 
 Master Node
 ```
@@ -135,7 +140,7 @@ Worker Node
 </configuration>
 ```
 
-14. Configure `mapred-site.xml` which locate at `~/hadoop/etc/hadoop/mapred-site.xml` on master node. (10.148.0.3 is my Master Node's internal IP)
+15. Configure `mapred-site.xml` which locate at `~/hadoop/etc/hadoop/mapred-site.xml` on master node. (10.148.0.3 is my Master Node's internal IP)
 
 ```
 <configuration>
@@ -166,12 +171,12 @@ Worker Node
 </configuration>
 ```
 
-15. Configure masters file which locate at `~/hadoop/etc/hadoop/masters` on master node.
+16. Configure masters file which locate at `~/hadoop/etc/hadoop/masters` on master node.
 ```
 10.148.0.3
 ```
 
-16. Configure masters file which locate at `~/hadoop/etc/hadoop/masters` on master node.
+17. Configure workers file which locate at `~/hadoop/etc/hadoop/workers` on master node.
 ```
 10.148.0.3
 10.138.0.2
@@ -180,31 +185,31 @@ Worker Node
 10.188.0.3
 ```
 
-17. Configure alias command in `~/.bashrc` file and auto activate hadoop environment configuration file.
+18. Configure alias command in `~/.bashrc` file and auto activate hadoop environment configuration file.
 
 ```
 alias hadoop="~/hadoop/hadoop-3.1.4/bin/hadoop"
 source ~/hadoop/etc/hadoop/hadoop-env.sh
 ```
 
-18. Activate our alias command.
+19. Activate our `~/.bashrc` file.
 ```
 source ~/.bashrc
 ```
 
-19. Format HDFS.
+20. Format HDFS.
 
 ```
 sudo ~/hadoop/bin/hdfs namenode -format
 ```
 
-20. Start all Hadoop Service
+21. Start all Hadoop Service
 
 ```
 sudo ~/hadoop/sbin/start-all.sh
 ```
 
-21. Check Service Status using following command.
+22. Check Service Status using following command.
 ```
 jps
 ```
